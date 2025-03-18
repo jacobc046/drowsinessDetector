@@ -57,8 +57,9 @@ net = NeuralNet()
 net.load_state_dict(torch.load('./trained_net.pth', map_location=torch.device('cpu')))
 net.eval()
 
-class_names = ['closed eyes', 'open eyes']
+class_names = ['Drowsy', 'Aware']
 
+#define facial recognition models
 face_cascade = cv2.CascadeClassifier('./haarcascade_frontalface_default.xml')
 eye_cascade = cv2.CascadeClassifier('./haarcascade_eye.xml')
 
@@ -69,7 +70,7 @@ green = (0,255,0)
 blue = (255,0,0)
 lineThickness = 2
 
-frame_count = 250
+# frame_count = 250
 prediction = ""
 while True:
     ret, img = liveVideo.read() # img at current instance, images in BGR form
@@ -94,6 +95,8 @@ while True:
             eh += 10
             ew += 20
             ex -= 10
+            
+            #filter small roi to eliminate falsely recognized eyes
             if 140 > ew > 60 and 140 > eh > 60:
                 cv2.rectangle(roi_color, (ex, ey), (ex+ew, ey+eh), green, lineThickness)
                 input_image = roi_gray[ey: ey+eh, ex: ex+ew]
